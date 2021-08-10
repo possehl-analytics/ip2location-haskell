@@ -152,9 +152,8 @@ ipStringToInteger = ipToInteger . read
     The 'doInit' function returns the Meta record containing metadata from the BIN database file.
     It takes one argument, of type 'String', which is the path to the BIN database file.
 -}
-doInit :: String -> IO Meta
-doInit myfile = do
-    contents <- BS.readFile myfile
+doInit :: BS.ByteString -> IO Meta
+doInit contents = do
     let stuff = runGet getMeta contents
     let iswrong = (show (wrongbin stuff))
     if iswrong == "1"
@@ -373,9 +372,8 @@ tryfirst myIP = do
     The 'doQuery' function returns an IP2LocationRecord containing geolocation data for an IP address.
     It takes 3 arguments; the BIN database file path (String), the metadata from 'doInit' function (Meta record) & either IPv4 or IPv6 address (String).
 -}
-doQuery :: String -> Meta -> String -> IO IP2LocationRecord
-doQuery myfile meta myip = do
-    contents <- BS.readFile myfile
+doQuery :: BS.ByteString -> Meta -> String -> IO IP2LocationRecord
+doQuery contents meta myip = do
     let fromV4Mapped = 281470681743360
     let toV4Mapped = 281474976710655
     let fromV4Compatible = 0
