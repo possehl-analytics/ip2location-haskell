@@ -151,7 +151,7 @@ ipStringToInteger = fmap ipToInteger . readMaybe
 
 {-|
     The 'doInit' function returns the Meta record containing metadata from the BIN database file.
-    It takes one argument, of type 'String', which is the path to the BIN database file.
+    It takes one argument, of type 'BS.ByteString', which is the path to the BIN database file.
 -}
 doInit :: BS.ByteString -> Maybe Meta
 doInit contents = do
@@ -371,7 +371,7 @@ tryfirst myIP = do
 
 {-|
     The 'doQuery' function returns an IP2LocationRecord containing geolocation data for an IP address.
-    It takes 3 arguments; the BIN database file path (String), the metadata from 'doInit' function (Meta record) & either IPv4 or IPv6 address (String).
+    It takes 3 arguments; the BIN database contents (ByteString), the metadata from 'doInit' function (Meta record) & either IPv4 or IPv6 address (String).
 -}
 doQuery :: BS.ByteString -> Meta -> String -> Maybe IP2LocationRecord
 doQuery contents meta myip = do
