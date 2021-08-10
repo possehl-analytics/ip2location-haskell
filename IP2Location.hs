@@ -24,6 +24,7 @@ import Data.Binary.Get
 import Data.IP
 import Control.Exception
 import System.Exit
+import Text.Read
 
 -- | Contains geolocation results.
 data IP2LocationRecord = IP2LocationRecord {
@@ -145,20 +146,20 @@ ipToOcts (IPv6 ip) = fromIPv6b ip
 ipToInteger :: IP -> Integer
 ipToInteger = sum . map (\(n,o) -> toInteger o * 256 ^ n) . zip [0..] . reverse . ipToOcts
 
-ipStringToInteger :: String -> Integer
-ipStringToInteger = ipToInteger . read
+ipStringToInteger :: String -> Maybe Integer
+ipStringToInteger = fmap ipToInteger . readMaybe
 
 {-|
     The 'doInit' function returns the Meta record containing metadata from the BIN database file.
     It takes one argument, of type 'String', which is the path to the BIN database file.
 -}
-doInit :: BS.ByteString -> IO Meta
+doInit :: BS.ByteString -> Maybe Meta
 doInit contents = do
     let stuff = runGet getMeta contents
     let iswrong = (show (wrongbin stuff))
     if iswrong == "1"
         then do
-            die(show "Incorrect IP2Location BIN file format. Please make sure that you are using the latest IP2Location BIN file.")
+            Nothing
         else do
             return $ stuff
 
@@ -363,16 +364,16 @@ search6 contents ipnum dbtype low high baseaddr indexbaseaddr colsize = do
             searchtree contents ipnum dbtype low high baseaddr colsize 6
 
 tryfirst myIP = do
-    result <- try (evaluate (ipStringToInteger myIP)) :: IO (Either SomeException Integer)
+    let result = ipStringToInteger myIP
     case result of
-        Left ex -> return $ toInteger (1 - 2)
-        Right val -> return val
+        Nothing -> return $ toInteger (1 - 2)
+        Just val -> return val
 
 {-|
     The 'doQuery' function returns an IP2LocationRecord containing geolocation data for an IP address.
     It takes 3 arguments; the BIN database file path (String), the metadata from 'doInit' function (Meta record) & either IPv4 or IPv6 address (String).
 -}
-doQuery :: BS.ByteString -> Meta -> String -> IO IP2LocationRecord
+doQuery :: BS.ByteString -> Meta -> String -> Maybe IP2LocationRecord
 doQuery contents meta myip = do
     let fromV4Mapped = 281470681743360
     let toV4Mapped = 281474976710655
