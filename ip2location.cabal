@@ -60,7 +60,7 @@ library
   -- other-extensions:    
   
   -- Other library packages from which modules are imported.
-  build-depends:       base >=4.9 && <=4.15, bytestring >=0.10 && <0.12, binary >=0.8.4 && <0.9, iproute >=1.7 && <1.8
+  build-depends:       base >=4.9 && <4.17, bytestring >=0.10 && <0.12, binary >=0.8.4 && <0.9, iproute >=1.7 && <1.8
   
   -- Directories containing source files.
   -- hs-source-dirs:      
